@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: filesystem-training-postgres
+    environment:
+      POSTGRES_DB: filesystem_training
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "15432:5432"
+    volumes:
+      - filesystem_training_data:/var/lib/postgresql/data
+      - ./database/dump:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  filesystem_training_data:
