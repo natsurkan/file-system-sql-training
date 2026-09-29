@@ -24,7 +24,7 @@ public static class ScenarioCatalog
             output,
             new FileSystemScanner(),
             new DatabaseImporter(connectionFactory, resources)),
-        new PlaceholderScenario(4, "Квартили размера файлов", "scenario-04-file-size-quartiles.sql", executor, resources, input, output),
+        new FileSizeQuartilesScenario(executor, resources, input, output),
         new PlaceholderScenario(5, "Сравнение файлов за сегодня и вчера", "scenario-05-today-vs-yesterday.sql", executor, resources, input, output),
         new PlaceholderScenario(6, "Поиск файлов-дубликатов", "scenario-06-duplicate-files.sql", executor, resources, input, output),
         new PlaceholderScenario(7, "Размеры по годам и месяцам", "scenario-07-year-month-report.sql", executor, resources, input, output),
@@ -33,3 +33,4 @@ public static class ScenarioCatalog
         new PlaceholderScenario(10, "Партиционирование", "scenario-10-partitioning.sql", executor, resources, input, output)
     };
 }
+
