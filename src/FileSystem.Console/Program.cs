@@ -17,6 +17,6 @@ var sqlExecutor = new NpgsqlSqlExecutor(connectionFactory);
 var resources = new ScenarioResourceReader();
 var input = new ConsoleInput();
 var output = new ConsoleOutput();
-var scenarios = ScenarioCatalog.CreateDefault(sqlExecutor, resources, input, output);
+var scenarios = ScenarioCatalog.CreateDefault(sqlExecutor, connectionFactory, resources, input, output);
 var application = new ApplicationRunner(scenarios, input, output);
 await application.RunAsync();

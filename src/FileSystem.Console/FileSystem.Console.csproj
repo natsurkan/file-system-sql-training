@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,6 +11,13 @@
     <PackageReference Include="Npgsql" Version="8.0.6" />
     <None Update="..\..\database\**\*" CopyToOutputDirectory="PreserveNewest" />
     <None Update="..\..\docs\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\database\queries\**\*" LinkBase="database\queries" />
+    <None Include="..\..\database\schema\**\*" LinkBase="database\schema" />
+    <None Include="..\..\database\dump\**\*" LinkBase="database\dump" />
+    <None Include="..\..\docs\scenarios\**\*" LinkBase="docs\scenarios" />
+    <None Include="..\..\sample-data\**\*" LinkBase="sample-data" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\docker-compose.yml" Link="docker-compose.yml" />
   </ItemGroup>
 
 </Project>
+
