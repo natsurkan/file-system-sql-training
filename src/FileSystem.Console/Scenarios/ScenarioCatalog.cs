@@ -26,12 +26,13 @@ public static class ScenarioCatalog
             new DatabaseImporter(connectionFactory, resources)),
         new FileSizeQuartilesScenario(executor, resources, input, output),
         new FileCountChangeScenario(executor, resources, input, output),
-        new PlaceholderScenario(6, "Поиск файлов-дубликатов", "scenario-06-duplicate-files.sql", executor, resources, input, output),
+        new DuplicateFilesScenario(executor, resources, input, output),
         new PlaceholderScenario(7, "Размеры по годам и месяцам", "scenario-07-year-month-report.sql", executor, resources, input, output),
         new PlaceholderScenario(8, "Папки выше медианы вложенных файлов", "scenario-08-folders-above-median.sql", executor, resources, input, output),
         new PlaceholderScenario(9, "Materialized Path, индекс и backfill", "scenario-09-materialized-path.sql", executor, resources, input, output),
         new PlaceholderScenario(10, "Партиционирование", "scenario-10-partitioning.sql", executor, resources, input, output)
     };
 }
+
 
 
