@@ -29,10 +29,11 @@ public static class ScenarioCatalog
         new DuplicateFilesScenario(executor, resources, input, output),
         new YearMonthReportScenario(executor, resources, input, output),
         new FoldersAboveMedianScenario(executor, resources, input, output),
-        new PlaceholderScenario(9, "Materialized Path, индекс и backfill", "scenario-09-materialized-path.sql", executor, resources, input, output),
+        new MaterializedPathScenario(executor, resources, input, output),
         new PlaceholderScenario(10, "Партиционирование", "scenario-10-partitioning.sql", executor, resources, input, output)
     };
 }
+
 
 
 

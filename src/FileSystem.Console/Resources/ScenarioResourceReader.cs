@@ -4,6 +4,7 @@ public sealed class ScenarioResourceReader
 {
     public Task<string> ReadSqlAsync(string fileName) => ReadResourceAsync("database", "queries", fileName);
     public Task<string> ReadNotesAsync(string fileName) => ReadResourceAsync("docs", "scenarios", fileName);
+    public Task<string> ReadMigrationAsync(string fileName) => ReadResourceAsync("database", "migrations", fileName);
 
     private static Task<string> ReadResourceAsync(string rootFolder, string subFolder, string fileName)
     {
