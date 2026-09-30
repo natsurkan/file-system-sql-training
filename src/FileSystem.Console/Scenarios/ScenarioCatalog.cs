@@ -30,9 +30,10 @@ public static class ScenarioCatalog
         new YearMonthReportScenario(executor, resources, input, output),
         new FoldersAboveMedianScenario(executor, resources, input, output),
         new MaterializedPathScenario(executor, resources, input, output),
-        new PlaceholderScenario(10, "Партиционирование", "scenario-10-partitioning.sql", executor, resources, input, output)
+        new PartitioningScenario(executor, resources, input, output)
     };
 }
+
 
 
 

@@ -14,10 +14,10 @@
     <None Include="..\..\database\queries\**\*" LinkBase="database\queries" />
     <None Include="..\..\database\schema\**\*" LinkBase="database\schema" />
     <None Include="..\..\database\dump\**\*" LinkBase="database\dump" />
+    <None Include="..\..\database\migrations\**\*" LinkBase="database\migrations" />
     <None Include="..\..\docs\scenarios\**\*" LinkBase="docs\scenarios" />
     <None Include="..\..\sample-data\**\*" LinkBase="sample-data" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\docker-compose.yml" Link="docker-compose.yml" />
   </ItemGroup>
 
 </Project>
-
