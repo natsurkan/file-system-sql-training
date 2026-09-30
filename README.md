@@ -4,37 +4,32 @@
 
 ## Запуск
 
-1. Создать базу `filesystem_training` в PostgreSQL.
-2. Выполнить `database/schema/001_initial_schema.sql`.
-3. Выполнить `database/schema/002_seed_data.sql`.
-4. При необходимости задать `ConnectionStrings__Postgres`.
-5. Запустить:
+Ничего вручную создавать в PostgreSQL и выполнять не нужно.
 
-```text
-dotnet run --project src/FileSystem.Console
-```
+1. Открыть `FileSystem.SqlTraining.sln` в Visual Studio.
+2. Убедиться, что стартовый проект — `FileSystem.Console`.
+3. Нажать `F5` или кнопку Play.
 
-Все сценарии пока являются заглушками. Через меню можно показать SQL-файл и Markdown-файл заметок.
+Приложение само запускает PostgreSQL 17 через Docker Compose. При первом создании
+Docker volume PostgreSQL автоматически применяет учебный dump со схемой и тестовыми данными.
 
-## Запуск с Docker
+Далее в меню можно выбрать сценарий, выполнить его, показать используемый SQL или открыть
+Markdown-заметки.
 
-1. Запустить PostgreSQL 17 и автоматически применить учебный dump:
+Для первой проверки выбрать сценарий `1`, затем действие `1`, ввести `FolderId` = `1`.
+На чистой учебной базе ожидаемый результат: `20 байт`.
 
-```bash
-docker compose up -d
-```
+## Требования
 
-2. Запустить приложение из Visual Studio или командой:
+- Docker Desktop должен быть установлен и запущен.
+- Visual Studio с поддержкой .NET 8 или .NET 8 SDK.
 
-```bash
-dotnet run --project src/FileSystem.Console
-```
+## Полный сброс учебной базы
 
-3. Выбрать пункт `1` и ввести `FolderId`. Для тестовой папки `usr` используется `1`; ожидаемый результат — `20 байт`.
+Нужен только если требуется снова получить чистые тестовые данные. В корне проекта выполнить:
 
-SQL-dump запускается PostgreSQL автоматически только при создании нового volume. Для полного сброса учебной базы:
-
-```bash
+```powershell
 docker compose down -v
-docker compose up -d
 ```
+
+После этого снова нажать Play: приложение само поднимет Docker и PostgreSQL снова применит dump.
