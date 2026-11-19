@@ -3,7 +3,7 @@ using FileSystem.ConsoleApp.Input;
 using FileSystem.ConsoleApp.Output;
 using FileSystem.ConsoleApp.Resources;
 using Npgsql;
-using NpgsqlTypes;
+using System.Runtime.CompilerServices;
 
 namespace FileSystem.ConsoleApp.Scenarios;
 
@@ -95,17 +95,17 @@ public sealed class PartitioningScenario : ScenarioBase
 
     private async Task<IReadOnlyList<PartitionRow>> ReadPartitionRowsAsync(int year)
     {
-        var sql = await Resources.ReadSqlAsync(SqlFileName);
+        var sqlTemplate = await Resources.ReadSqlAsync(SqlFileName);
         var start = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var end = start.AddYears(1);
 
+        var sql = FormattableStringFactory.Create(
+            sqlTemplate,
+            start,
+            end);
+
         return await SqlExecutor.QueryAsync(
             sql,
-            new[]
-            {
-                new NpgsqlParameter("period_start", NpgsqlDbType.TimestampTz) { Value = start },
-                new NpgsqlParameter("period_end", NpgsqlDbType.TimestampTz) { Value = end }
-            },
             reader => new PartitionRow(
                 reader.GetString(reader.GetOrdinal("physical_partition")),
                 reader.GetInt64(reader.GetOrdinal("file_count")),

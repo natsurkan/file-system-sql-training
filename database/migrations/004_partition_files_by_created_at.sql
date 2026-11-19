@@ -3,6 +3,12 @@
 -- ключ партиционирования. Поэтому прежнее правило уникальности (folder_id, name)
 -- переносится в trigger ниже.
 
+-- Сценарий партиционирования может запускаться как до, так и после сценария
+-- Materialized Path. Если столбца ещё нет, создаём его пустым; если он уже есть,
+-- сохранённые пути будут перенесены в новую таблицу ниже.
+ALTER TABLE files
+    ADD COLUMN IF NOT EXISTS materialized_path text;
+
 ALTER TABLE files RENAME TO files_before_partitioning;
 
 CREATE TABLE files
@@ -13,6 +19,7 @@ CREATE TABLE files
     content        bytea NOT NULL,
     size_bytes     bigint NOT NULL CHECK (size_bytes >= 0),
     created_at_utc timestamptz NOT NULL DEFAULT now(),
+    materialized_path text,
     PRIMARY KEY (id, created_at_utc)
 ) PARTITION BY RANGE (created_at_utc);
 
@@ -39,7 +46,8 @@ INSERT INTO files (
     name,
     content,
     size_bytes,
-    created_at_utc)
+    created_at_utc,
+    materialized_path)
 OVERRIDING SYSTEM VALUE
 SELECT
     id,
@@ -47,7 +55,8 @@ SELECT
     name,
     content,
     size_bytes,
-    created_at_utc
+    created_at_utc,
+    materialized_path
 FROM files_before_partitioning;
 
 SELECT setval(
@@ -59,6 +68,15 @@ DROP TABLE files_before_partitioning;
 
 CREATE INDEX ix_files_created_at_utc
     ON files (created_at_utc);
+
+-- Ускоряет проверку (folder_id, name) в trigger во всех партициях.
+-- UNIQUE здесь быть не может без created_at_utc, поэтому глобальное правило
+-- уникальности по-прежнему обеспечивает trigger ниже.
+CREATE INDEX ix_files_folder_name
+    ON files (folder_id, name);
+
+CREATE INDEX ix_files_materialized_path
+    ON files (materialized_path text_pattern_ops);
 
 CREATE OR REPLACE FUNCTION prevent_duplicate_child_name()
 RETURNS trigger AS $$

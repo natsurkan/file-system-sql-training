@@ -28,23 +28,23 @@ public sealed class YearMonthReportScenario : ScenarioBase
 
     protected override async Task RunAsync()
     {
-        var sql = await Resources.ReadSqlAsync(
-            SqlFileName);
-
         try
         {
-            var rows = await SqlExecutor.QueryAsync(
+            var migration = await Resources.ReadMigrationAsync("005_add_year_month_report.sql");
+            await SqlExecutor.ExecuteAsync(migration, Array.Empty<Npgsql.NpgsqlParameter>());
+            var sql = await Resources.ReadSqlAsync(SqlFileName);
+            string[] columns = Array.Empty<string>();
+            var rows = await SqlExecutor.QueryCursorAsync(
                 sql,
-                Array.Empty<Npgsql.NpgsqlParameter>(),
-                reader => new YearMonthRow(
-                    reader.GetInt32(
-                        reader.GetOrdinal("month")),
-                    reader.GetInt64(
-                        reader.GetOrdinal("2025")),
-                    reader.GetInt64(
-                        reader.GetOrdinal("2026")),
-                    reader.GetInt64(
-                        reader.GetOrdinal("2027"))));
+                reader =>
+                {
+                    if (columns.Length == 0)
+                        columns = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToArray();
+                    var values = new string[reader.FieldCount];
+                    for (var index = 0; index < reader.FieldCount; index++)
+                        values[index] = reader.GetValue(index).ToString() ?? string.Empty;
+                    return values;
+                });
 
             if (rows.Count == 0)
             {
@@ -54,14 +54,25 @@ public sealed class YearMonthReportScenario : ScenarioBase
                 return;
             }
 
-            Output.Write(
-                "Месяц | 2025 | 2026 | 2027");
+            columns[0] = "Месяц";
+            var widths = columns.Select(column => column.Length).ToArray();
+            foreach (var row in rows)
+            {
+                for (var index = 0; index < widths.Length; index++)
+                    widths[index] = Math.Max(widths[index], row[index].Length);
+            }
+
+            var borderSegments = widths.Select(width => new string('─', width + 2)).ToArray();
+            Output.WriteTitle("Размер файлов по месяцам и годам · байты");
+            Output.Write("┌" + string.Join("┬", borderSegments) + "┐");
+            Output.Write(FormatRow(columns, widths));
+            Output.Write("├" + string.Join("┼", borderSegments) + "┤");
 
             foreach (var row in rows)
             {
-                Output.Write(
-                    $"{row.Month,5} | {row.Year2025,4} | {row.Year2026,4} | {row.Year2027,4}");
+                Output.Write(FormatRow(row, widths));
             }
+            Output.Write("└" + string.Join("┴", borderSegments) + "┘");
         }
         catch (Exception exception)
         {
@@ -70,9 +81,12 @@ public sealed class YearMonthReportScenario : ScenarioBase
         }
     }
 
-    private sealed record YearMonthRow(
-        int Month,
-        long Year2025,
-        long Year2026,
-        long Year2027);
+    private static string FormatRow(string[] values, int[] widths)
+    {
+        var cells = new string[values.Length];
+        cells[0] = values[0].PadRight(widths[0]);
+        for (var index = 1; index < values.Length; index++)
+            cells[index] = values[index].PadLeft(widths[index]);
+        return "│ " + string.Join(" │ ", cells) + " │";
+    }
 }

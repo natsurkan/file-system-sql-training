@@ -1,46 +1,9 @@
--- Задание 7: месяцы строками, годы колонками.
--- В ячейках находится сумма SizeBytes файлов,
--- созданных в соответствующем году и месяце.
-
-WITH monthly_totals AS
-(
-    -- Сначала обычная группировка по году и месяцу.
-    SELECT
-        EXTRACT(
-            YEAR FROM files.created_at_utc
-        )::int AS file_year,
-
-        EXTRACT(
-            MONTH FROM files.created_at_utc
-        )::int AS file_month,
-
-        SUM(files.size_bytes) AS total_size_bytes
-    FROM files
-    GROUP BY
-        file_year,
-        file_month
-)
--- Затем разворачиваем годы в отдельные колонки.
-SELECT
-    file_month AS month,
-
-    COALESCE(
-        SUM(total_size_bytes)
-            FILTER (WHERE file_year = 2025),
-        0
-    ) AS "2025",
-
-    COALESCE(
-        SUM(total_size_bytes)
-            FILTER (WHERE file_year = 2026),
-        0
-    ) AS "2026",
-
-    COALESCE(
-        SUM(total_size_bytes)
-            FILTER (WHERE file_year = 2027),
-        0
-    ) AS "2027"
-FROM monthly_totals
-GROUP BY file_month
-ORDER BY file_month;
+-- Функция из миграции 005 сама получает годы и строит crosstab.
+-- Сначала выполнить database/migrations/005_add_year_month_report.sql.
+-- Функция создаёт временную таблицу сумм, удаляемую при завершении транзакции.
+-- Для ручного запуска в SQL-клиенте:
+-- BEGIN ISOLATION LEVEL REPEATABLE READ;
+-- SELECT open_year_month_report('year_month_report');
+-- FETCH ALL FROM year_month_report;
+-- COMMIT;
+SELECT open_year_month_report('year_month_report');
